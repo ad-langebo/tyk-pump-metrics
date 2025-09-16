@@ -17,16 +17,15 @@ tyk-gateway:
       tag: v5.9.2
     extraVolumes:
       - name: tyk-apps
-        configMap:
-          name: tyk-httpbin-app
+        persistentVolumeClaim:
+          claimName: tyk-apps-pvc
     extraVolumeMounts:
       - name: tyk-apps
         mountPath: /mnt/tyk-gateway/apps
-        readOnly: true
     replicaCount: 3
     control:
       enabled: true
-    
+
 tyk-pump:
   pump:
     replicaCount: 2
