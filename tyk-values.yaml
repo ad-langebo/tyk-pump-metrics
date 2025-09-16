@@ -1,0 +1,41 @@
+global:
+  components:
+    pump: true
+  secrets:
+    APISecret: foo
+  redis:
+    enableSentinel: true
+    masterName: mymaster
+    addrs:
+      - tyk-redis.default.svc:26379
+    pass: super-secure-plaintext-password
+    oasValidateSchemaDefaults: true
+tyk-gateway:
+  gateway:
+    image:
+      repository: tykio/tyk-gateway
+      tag: v5.9.2
+    extraVolumes:
+      - name: tyk-apps
+        configMap:
+          name: tyk-httpbin-app
+    extraVolumeMounts:
+      - name: tyk-apps
+        mountPath: /mnt/tyk-gateway/apps
+        readOnly: true
+    replicaCount: 3
+    control:
+      enabled: true
+    
+tyk-pump:
+  pump:
+    replicaCount: 2
+    image:
+      repository: tykio/tyk-pump-docker-pub
+      tag: v1.12.1
+    containerPort: 9090
+    backend:
+      - "prometheus"
+    prometheusPump:
+      path: /metrics
+      customMetrics: '[{"name":"tyk_http_requests_total","description":"Total of API requests","metric_type":"counter","labels":["response_code","api_name","method","api_key","alias","path"]},          {              "name":"tyk_http_latency",              "description":"Latency of API requests",              "metric_type":"histogram",              "labels":["type","response_code","api_name","method","api_key","alias","path"]          }]'
