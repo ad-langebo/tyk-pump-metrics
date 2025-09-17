@@ -86,7 +86,7 @@ this will not return any tyk_ specific metrics whatsoever
 12. register httpbin legacy api via
 
 ```shell
-curl -L 'http://localhost:9696/tyk/apis' -H 'Content-Type: application/json' -H 'X-Tyk-Authorization: foo' -d "@httpbin-oas.json"
+curl -L 'http://localhost:9696/tyk/apis' -H 'Content-Type: application/json' -H 'X-Tyk-Authorization: foo' -d "@httpbin-legacy.json"
 ```
 
 13. reload tyk again
