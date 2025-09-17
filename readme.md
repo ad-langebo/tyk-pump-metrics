@@ -1,5 +1,7 @@
 # tyk-pump missing metrics issue
 
+we encounter an issue with tyk-pump not emitting tyk_* specific metrics via the prometheus pump on OAS imported APIs. We use the tyk-oss helm chart deployment.
+
 ## prerequisities
 
 - kind (or other k8s cluster access)
@@ -48,7 +50,7 @@ helm install tyk-oss tyk-helm/tyk-oss --version 2.2.0 -f tyk-values.yaml
 7. port-forward gateway, control and pump 
 
 ```shell
-kubectl port-forward deploy/ ???
+kubectl port-forward deploy/gateway-tyk-oss-tyk-gateway 8080:8080 9696:9696 & kubectl port-forward deploy/pump-tyk-oss-tyk-pump 9090:9090 &
 ```
 
 ### register & invoke OAS api
@@ -56,7 +58,7 @@ kubectl port-forward deploy/ ???
 8. register httpbin OAS api via 
 
 ```shell 
-curl -L 'http://localhost:9696/tyk/apis/oas/import' -H 'Content-Type: application/json' -H 'X-Tyk-Authorization: foo' -d "@httpbin-oas.json"
+curl -L 'http://localhost:9696/tyk/apis/oas' -H 'Content-Type: application/json' -H 'X-Tyk-Authorization: foo' -d "@httpbin-oas.json"
 ```
 
 9. reload tyk 
@@ -74,7 +76,7 @@ curl -L 'http://localhost:8080/httpbin/uuid'
 11. query pump metrics endpoint
 
 ```shell
-curl -L 'http://localhost:9090/metrics'
+curl -L 'http://localhost:9090/metrics' 2>&1 | grep "tyk_*"
 ```
 
 this will not return any tyk_ specific metrics whatsoever
@@ -93,16 +95,21 @@ curl -L 'http://localhost:9696/tyk/apis' -H 'Content-Type: application/json' -H 
 curl -L 'http://localhost:9696/tyk/reload/group' -H 'X-Tyk-Authorization: foo'
 ```
 
-14. hit httpbin legacy endpoints via the gateway
+14. hit httpbin legacy endpoints via the gateway multiple times
 
 ```shell
 curl -L 'http://localhost:8080/keyless-test/uuid'
 ```
 
-15. query pump metrics endpoint again
+15. query pump metrics endpoint again (takes ~15s)
 
 ```shell
-curl -L 'http://localhost:9090/metrics'
+curl -L 'http://localhost:9090/metrics' 2>&1 | grep "tyk_*"
 ```
 
 this will result in tyk_ specific metrics being available for the legacy keyless-test api
+
+16. teardown
+```shell
+kind delete cluster -n tyk-pump-test
+```
