@@ -16,12 +16,12 @@ tyk-gateway:
       repository: tykio/tyk-gateway
       tag: v5.9.2
     extraEnvs: 
-    - name: TYK_GW_ENABLEANALYTICS
-      value: "true"
-    - name: TYK_GW_ANALYTICSCONFIG_ENABLEDETAILEDRECORDING
-      value: "true"
-    - name: TYK_GW_ANALYTICSCONFIG_ENABLEGEOIP
-      value: "true"
+      - name: TYK_GW_ENABLEANALYTICS
+        value: "true"
+      - name: TYK_GW_ANALYTICSCONFIG_ENABLEDETAILEDRECORDING
+        value: "true"
+      - name: TYK_GW_ANALYTICSCONFIG_ENABLEGEOIP
+        value: "true"
     extraVolumes:
       - name: tyk-apps
         persistentVolumeClaim:

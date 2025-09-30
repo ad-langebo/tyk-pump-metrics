@@ -1675,6 +1675,12 @@
             "listenPath": {
                 "value": "/httpbin/",
                 "strip": true
+            },
+            "detailedActivityLogs": {
+                "enabled": true
+            },
+            "detailedTracing": {
+                "enabled": true
             }
         }
     },
